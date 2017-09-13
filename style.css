@@ -216,11 +216,30 @@ a {
     height: 100%;
 }
 
-#details #furniture-id {
+#details p.inputcontainer{
+  display: flex; 
+  align-items: center;
+}
+
+#details p.inputcontainer span {
+  flex: 0; 
+  white-space: nowrap; 
+  margin-right:6px;
+}
+
+#details input {
+    flex: 1;
     width: auto;
     padding: 0.3em;
     background: #eee;
     border-bottom: 1px solid black;
+}
+
+#details input:disabled {
+    width: auto;
+    padding: 0.3em;
+    background: transparent;
+    border-bottom: none;
 }
 
 #details #jsfiddle-button {

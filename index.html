@@ -21,7 +21,7 @@
 
   <div id="library">
     <div id="search">
-      <input value="chair" placeholder="type a query, e.g. 'chair'" />
+      <input placeholder="type a query, e.g. 'chair'" />
     </div>
     <div id="results"></div>
   </div>
@@ -47,7 +47,6 @@
 
   <div id="details">
     <p style="padding-bottom: 1em;">
-      <a id="back-button">&lt; back</a>
       <span style="float:right;">
         <a href="https://3d.io/docs/api/1/furniture.html" target="_blank">Docs</a> |
         <a href="https://github.com/archilogic-com/3dio-furniture-app" target="_blank">Github</a> |
@@ -79,10 +78,17 @@
         <div id="preview-loading-overlay">LOADING ...</div>
       </div>
     </p>
-    <p style="display: flex; align-items: center;">
-      <span style="flex: 0; white-space: nowrap; margin-right:6px;">Furniture ID: </span>
-      <input style="flex: 1;" id="furniture-id" type="text" value="a2d91985-6d60-43ef-b660-0d6ed370bb6f">
+    <p class="inputcontainer">
+      <span>Furniture ID: </span>
+      <input id="furniture-id" type="text">
     </p>
+    <p class="inputcontainer">
+      <span>Name: </span>
+      <input id="furniture-name" type="text" disabled="disabled">
+    <p>
+    <p class="inputcontainer">
+      <span>Manufacturer: </span>
+      <input id="furniture-manufacturer" type="text" disabled="disabled">
     <p>
     <form target="_blank" method="post" action="https://jsfiddle.net/api/post/library/pure/" style="display:inline;">
         <textarea id="example-html" name="html" style="display:none;">

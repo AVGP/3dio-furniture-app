@@ -6,10 +6,11 @@ var furnitureItemTemplate = document.querySelector('template')
 
 var intro = document.querySelector('#intro')
 var details = document.querySelector('#details')
-var detailsBackButton = document.querySelector('#back-button')
 var preview = document.querySelector('a-entity[io3d-furniture]')
 var previewLoadingOverlay = document.querySelector('#preview-loading-overlay')
 var furnitureIdField = document.querySelector('#furniture-id')
+var furnitureNameField = document.querySelector('#furniture-name')
+var furnitureManufacturerField = document.querySelector('#furniture-manufacturer')
 var codeSnippetAframe = document.querySelector('#code-snippet-aframe')
 var codeSnippetThree = document.querySelector('#code-snippet-three')
 var exampleTitle = document.querySelector('#example-title')
@@ -44,11 +45,14 @@ function updateSearchResultsView (results) {
     item.querySelector('.name').textContent = furniture.name
     item.querySelector('.manufacturer').textContent = furniture.manufacturer
     item.children[0].dataset.id = furniture.id
+    item.children[0].dataset.name = furniture.name
+    item.children[0].dataset.manufacturer = furniture.manufacturer
     resultsContainer.appendChild(item)
   })
 }
 
-function updateDetailsView (furnitureId) {
+function updateDetailsView (furnitureDataset) {
+  var furnitureId = furnitureDataset.id
   if (!furnitureId) return
   previewLoadingOverlay.style.display = 'block'
 
@@ -57,19 +61,29 @@ function updateDetailsView (furnitureId) {
 
   // update furniture ID in a-frame scene
   preview.removeEventListener('model-loaded', hideLoadingScreen)
-  preview.setAttribute('io3d-furniture', 'id:'+furnitureId)
+  preview.setAttribute('io3d-furniture', 'id:' + furnitureId)
   // update id in detail view
   furnitureIdField.value = furnitureId
+  furnitureNameField.value = furnitureDataset.name || ''
+  furnitureManufacturerField.value = furnitureDataset.manufacturer || ''
+
   preview.addEventListener('model-loaded', hideLoadingScreen)
+  preview.addEventListener('model-loaded', updateFurnitureInfo)
+
   // update code snippets
-  codeSnippetAframe.innerHTML = codeSnippetAframe.innerHTML.replace(/id:([^"'<]+)/gmi, 'id:'+furnitureId)
+  codeSnippetAframe.innerHTML = codeSnippetAframe.innerHTML.replace(/id:([^"'<]+)/gmi, 'id:' + furnitureId)
   codeSnippetThree.innerHTML = codeSnippetThree.innerHTML.replace(/'([^']+)'/gmi, '\'' + furnitureId + '\'')
   // update example html code for jsfiddle
-  exampleHtml.innerHTML =  exampleHtml.innerHTML.replace(/id:([^"<]+)/gmi, 'id:'+furnitureId)
+  exampleHtml.innerHTML =  exampleHtml.innerHTML.replace(/id:([^"<]+)/gmi, 'id:' + furnitureId)
   // update data for codepen
   codepenData.value = JSON.stringify({ title: exampleTitle.value, html: exampleHtml.value })
   // updates hashtag
-  window.location.hash = 'furnitureId='+furnitureId
+  window.location.hash = 'furnitureId=' + furnitureId
+}
+
+function updateFurnitureInfo () {
+  furnitureNameField.value = preview.components['io3d-furniture'].info.name
+  furnitureManufacturerField.value = preview.components['io3d-furniture'].info.manufacturer
 }
 
 function hideLoadingScreen () {
@@ -79,9 +93,6 @@ function hideLoadingScreen () {
 // Event handlers
 
 searchBar.addEventListener('input', debounce(1000, false, search))
-detailsBackButton.addEventListener('click', function () {
-  details.style.zIndex = 0
-})
 
 furnitureIdField.addEventListener('click', furnitureIdField.select)
 
@@ -91,19 +102,19 @@ results.addEventListener('click', function (evt) {
 
       evt.path.forEach(function (elem) {
       if(elem.dataset && elem.dataset.id) {
-        updateDetailsView(elem.dataset.id)
+        updateDetailsView(elem.dataset)
       }
     })
   } else {
     var elem = findDatasetInParents(evt.target, 'id', 5)
-    if(elem && elem.dataset && elem.dataset.id) updateDetailsView(elem.dataset.id)
+    if(elem && elem.dataset && elem.dataset.id) updateDetailsView(elem.dataset)
   }
 })
 
 // initialize
 
 tabify('.tab-box')
-updateDetailsView(getFurnitureIdFromUrl())
+updateDetailsView({ id: getFurnitureIdFromUrl() })
 search()
 
 // Helpers
@@ -120,15 +131,15 @@ function findDatasetInParents(elem, item, depth) {
 function debounce(wait, immediate, func) {
   var timeout;
   return function() {
-    var context = this, args = arguments;
+    var context = this, args = arguments
     var later = function() {
-      timeout = null;
-      if (!immediate) func.apply(context, args);
+      timeout = null
+      if (!immediate) func.apply(context, args)
     };
-    var callNow = immediate && !timeout;
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-    if (callNow) func.apply(context, args);
+    var callNow = immediate && !timeout
+    clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
+    if (callNow) func.apply(context, args)
   };
 };
 
@@ -142,7 +153,7 @@ function tabify(containerSelector) {
   var root = document.querySelector(containerSelector)
   var tabs = Array.from(root.querySelectorAll('.tab'))
   var tabLinks = Array.from(root.querySelectorAll('li[data-tab]'))
-  
+
   tabLinks.forEach(function(link) {
     link.addEventListener('click', function(evt) {
       tabs.forEach(function(tab) { tab.classList.remove('active') })
