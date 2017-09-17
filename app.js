@@ -6,6 +6,7 @@ var furnitureItemTemplate = document.querySelector('template')
 
 var intro = document.querySelector('#intro')
 var details = document.querySelector('#details')
+var detailsBackButton = document.querySelector('#back-button')
 var preview = document.querySelector('a-entity[io3d-furniture]')
 var previewLoadingOverlay = document.querySelector('#preview-loading-overlay')
 var furnitureIdField = document.querySelector('#furniture-id')
@@ -93,7 +94,7 @@ function hideLoadingScreen () {
 // Event handlers
 
 searchBar.addEventListener('input', debounce(1000, false, search))
-
+detailsBackButton.addEventListener('click', function () { details.style.zIndex = 0 })
 furnitureIdField.addEventListener('click', furnitureIdField.select)
 
 results.addEventListener('click', function (evt) {
